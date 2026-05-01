@@ -146,7 +146,6 @@ for label, test_labels, predictions in [
 
     
 # Feature importance table
-# Feature importance Excel tables (TOP 10 ONLY)
 with pd.ExcelWriter('results/ML_Final_feature_importance.xlsx', engine='openpyxl') as writer:
     for label, model, selector in [
         ('Country', rf_country, selector_country),
@@ -155,7 +154,6 @@ with pd.ExcelWriter('results/ML_Final_feature_importance.xlsx', engine='openpyxl
         kmer_names = np.array(data.columns)[selector.get_support(indices=True)]
         importances = model.feature_importances_
 
-        # Get top 10
         top_n = 10
         top_indices = np.argsort(importances)[::-1][:top_n]
 
@@ -165,7 +163,6 @@ with pd.ExcelWriter('results/ML_Final_feature_importance.xlsx', engine='openpyxl
             'Mean_Decrease_in_Impurity': importances[top_indices]
         })
 
-        # Sort properly by importance (just to be safe)
         top_df = top_df.sort_values(
             by='Mean_Decrease_in_Impurity',
             ascending=False
