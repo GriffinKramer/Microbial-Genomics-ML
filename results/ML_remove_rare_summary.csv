@@ -1,0 +1,13 @@
+Model,Label,Rebalancing,Balanced Accuracy,Macro Precision,Macro Recall,Macro F1
+GBDT,Country,Oversample,0.315,0.322,0.315,0.302
+GBDT,Country,None,0.283,0.281,0.283,0.275
+GBDT,Region,Oversample,0.411,0.429,0.411,0.414
+GBDT,Region,None,0.358,0.386,0.358,0.365
+RF,Country,Oversample,0.337,0.37,0.337,0.326
+RF,Country,None,0.302,0.491,0.302,0.325
+RF,Region,Oversample,0.393,0.405,0.393,0.396
+RF,Region,None,0.337,0.428,0.337,0.359
+LinearSVC,Country,Oversample,0.328,0.288,0.328,0.233
+LinearSVC,Country,None,0.264,0.303,0.264,0.208
+LinearSVC,Region,Oversample,0.341,0.299,0.341,0.228
+LinearSVC,Region,None,0.22,0.225,0.22,0.192
