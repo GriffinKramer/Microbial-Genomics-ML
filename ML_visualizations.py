@@ -103,7 +103,7 @@ plt.close()
 
 
 
-# ── Option 1: Heatmap ─────────────────────────────────────────────────
+# heatmap
 model_rebal = [('GBDT','Oversample'),('GBDT','None'),('RF','Oversample'),
                ('RF','None'),('LinearSVC','Oversample'),('LinearSVC','None')]
 row_labels = [f"{m} {r}" for m, r in model_rebal]
@@ -124,12 +124,12 @@ for label in ['Country', 'Region']:
     matrix = np.array(matrix)
 
     fig, ax = plt.subplots(figsize=(14, 5))
-    im = ax.imshow(matrix, cmap='YlGn', vmin=0.2, vmax=0.6)
+    im = ax.imshow(matrix, cmap='RdYlBu_r', vmin=0.2, vmax=0.6)
     ax.set_xticks(range(len(col_labels)))
     ax.set_xticklabels(col_labels, fontsize=9)
     ax.set_yticks(range(len(row_labels)))
     ax.set_yticklabels(row_labels, fontsize=9)
-    ax.set_title(f'{label} Prediction — Macro F1 Heatmap', fontsize=12)
+    ax.set_title(f'{label} Prediction: Macro F1 Heatmap', fontsize=12)
     plt.colorbar(im, ax=ax, label='Macro F1')
     for i in range(len(row_labels)):
         for j in range(len(col_labels)):
@@ -138,32 +138,3 @@ for label in ['Country', 'Region']:
     plt.savefig(f'results/fig_heatmap_{label.lower()}.png', dpi=300, bbox_inches='tight')
     plt.close()
     print(f"saved fig_heatmap_{label.lower()}.png")
-
-# ── Option 2: Grouped bar chart ───────────────────────────────────────
-colors6 = ['#4878CF','#4878CF','#6ACC65','#6ACC65','#D65F5F','#D65F5F']
-hatches = ['','//','','//','','//']
-
-for label in ['Country', 'Region']:
-    fig, ax = plt.subplots(figsize=(16, 5))
-    x = np.arange(len(col_labels))
-    width = 0.13
-    for i, ((model, rebal), color, hatch) in enumerate(zip(model_rebal, colors6, hatches)):
-        vals = []
-        for key in df_keys:
-            df = dfs[key]
-            match = df[(df['Label']==label)&(df['Model']==model)&(df['Rebalancing']==rebal)]
-            vals.append(match['Macro F1'].values[0] if len(match) else 0)
-        offset = (i - 2.5) * width
-        bars = ax.bar(x + offset, vals, width, label=f'{model} {rebal}',
-                      color=color, hatch=hatch, edgecolor='white')
-
-    ax.set_xticks(x)
-    ax.set_xticklabels(col_labels, fontsize=9)
-    ax.set_ylabel('Macro F1')
-    ax.set_ylim(0, 0.7)
-    ax.set_title(f'{label} Prediction — All Models and Conditions', fontsize=12)
-    ax.legend(fontsize=8, loc='upper left')
-    plt.tight_layout()
-    plt.savefig(f'results/fig_grouped_{label.lower()}.png', dpi=300, bbox_inches='tight')
-    plt.close()
-    print(f"saved fig_grouped_{label.lower()}.png")

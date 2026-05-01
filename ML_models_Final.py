@@ -144,22 +144,38 @@ for label, test_labels, predictions in [
     plt.savefig(f'results/confusion_matrix_{label.lower()}.png', dpi=300, bbox_inches='tight')
     plt.close()
 
-# Feature importance figuer
-for label, model, selector in [
-    ('Country', rf_country, selector_country),
-    ('Region',  rf_region,  selector_region)]:
-    kmer_names = np.array(data.columns)[selector.get_support(indices=True)]
-    importances = model.feature_importances_
-    top_n = 20
-    top_indices = np.argsort(importances)[::-1][:top_n]
-    top_importances = importances[top_indices]
-    top_kmers = kmer_names[top_indices]
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.barh(range(top_n), top_importances[::-1], color='#4878CF')
-    ax.set_yticks(range(top_n))
-    ax.set_yticklabels(top_kmers[::-1], fontsize=8)
-    ax.set_xlabel('Mean Decrease in Impurity')
-    ax.set_title(f'Top {top_n} Most Important Kmers - RF {label} Prediction', fontsize=12)
-    plt.tight_layout()
-    plt.savefig(f'results/feature_importance_{label.lower()}.png', dpi=300, bbox_inches='tight')
-    plt.close()
+    
+# Feature importance table
+# Feature importance Excel tables (TOP 10 ONLY)
+with pd.ExcelWriter('results/ML_Final_feature_importance.xlsx', engine='openpyxl') as writer:
+    for label, model, selector in [
+        ('Country', rf_country, selector_country),
+        ('Region',  rf_region,  selector_region)
+    ]:
+        kmer_names = np.array(data.columns)[selector.get_support(indices=True)]
+        importances = model.feature_importances_
+
+        # Get top 10
+        top_n = 10
+        top_indices = np.argsort(importances)[::-1][:top_n]
+
+        top_df = pd.DataFrame({
+            'Rank': range(1, top_n + 1),
+            'Kmer': kmer_names[top_indices],
+            'Mean_Decrease_in_Impurity': importances[top_indices]
+        })
+
+        # Sort properly by importance (just to be safe)
+        top_df = top_df.sort_values(
+            by='Mean_Decrease_in_Impurity',
+            ascending=False
+        ).reset_index(drop=True)
+
+        top_df['Rank'] = range(1, top_n + 1)
+
+        top_df.to_excel(
+            writer,
+            sheet_name=f'RF_{label}_Top10_Features',
+            index=False
+        )
+        
